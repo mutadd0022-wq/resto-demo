@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>РестоДемо — 4 приложения</title>
+<style>
+:root{--bg:#0f1220;--card:#1b1f33;--card2:#232846;--acc:#ffb347;--acc2:#7cf0c8;--red:#ff7a7a;--txt:#eef1ff;--mut:#9aa3c7}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+body{background:var(--bg);color:var(--txt);min-height:100vh}
+.wrap{max-width:520px;margin:0 auto;padding:14px;padding-bottom:90px}
+h1{font-size:22px;margin-bottom:4px}
+h2{font-size:17px;margin:16px 0 8px}
+.mut{color:var(--mut);font-size:13px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:none;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:600;cursor:pointer;background:var(--acc);color:#201300;flex:1;min-width:120px}
+.btn.sec{background:var(--card2);color:var(--txt)}
+.btn.grn{background:var(--acc2);color:#03271c}
+.btn.red{background:var(--red);color:#2b0505}
+.btn.sm{padding:8px 12px;font-size:13px;min-width:0;flex:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item{background:var(--card2);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:4px}
+.item .em{font-size:30px}
+.item b{font-size:14px}
+.item .p{color:var(--acc);font-weight:700;font-size:13px}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:#161a2e;display:flex;z-index:9}
+.tabs button{flex:1;padding:13px 4px;background:none;border:none;color:var(--mut);font-size:12px;cursor:pointer}
+.tabs button.on{color:var(--acc);font-weight:700}
+.order{border-left:4px solid var(--acc);padding-left:10px;margin-bottom:12px}
+.tag{display:inline-block;background:var(--card2);border-radius:20px;padding:3px 10px;font-size:12px;margin:2px}
+.st-new{color:var(--acc)}.st-cooking{color:#7cb7ff}.st-ready{color:var(--acc2)}.st-served{color:var(--mut)}
+.big{font-size:34px;font-weight:800;text-align:center}
+input,select{background:var(--card2);border:1px solid #333a5e;color:var(--txt);border-radius:10px;padding:11px;font-size:15px;width:100%}
+.timer{font-variant-numeric:tabular-nums;font-size:22px;font-weight:800;color:var(--acc2)}
+img.ph{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--acc)}
+.play{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:12px;padding:10px;margin-bottom:8px;cursor:pointer}
+.play .eq{font-size:20px}
+.stat{background:var(--card2);border-radius:12px;padding:12px;text-align:center}
+.stat .v{font-size:22px;font-weight:800;color:var(--acc)}
+.hr{height:1px;background:#2a3050;margin:12px 0}
+.mood{font-size:34px;background:var(--card2);border-radius:14px;padding:8px 0;flex:1;text-align:center;cursor:pointer}
+.mood.sel{outline:3px solid var(--acc)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🍽️ РестоДемо</h1>
+  <p class="mut">4 приложения в одном файле. Откройте этот файл в нескольких вкладках браузера — данные синхронизируются между Гостем, Официантом, Кухней и Директором.</p>
+
+  <!-- ===== ГОСТЬ ===== -->
+  <div id="g">
+    <div class="card" id="gStep0">
+      <h2>👋 Добро пожаловать!</h2>
+      <p class="mut" style="margin-bottom:8px">Как вам сегодня настроение?</p>
+      <div class="row" style="flex-wrap:nowrap">
+        <div class="mood" onclick="setMood(1)">😞</div>
+        <div class="mood" onclick="setMood(2)">🙁</div>
+        <div class="mood" onclick="setMood(3)">😐</div>
+        <div class="mood" onclick="setMood(4)">🙂</div>
+        <div class="mood" onclick="setMood(5)">😄</div>
+      </div>
+      <div id="moodMusic" class="hidden" style="margin-top:12px">
+        <div class="hr"></div>
+        <p class="mut">Похоже, день не задался… Подберём музыку для вас 🎵</p>
+        <div id="playlist"></div>
+      </div>
+      <div class="hr"></div>
+      <input id="gName" placeholder="Ваше имя (для истории и комплиментов)" style="margin-bottom:8px">
+      <div class="row">
+        <select id="gTable"><option>Стол 1</option><option>Стол 2</option><option>Стол 3</option><option>Стол 4</option><option>Стол 5</option><option>Стол 6</option></select>
+      </div>
+      <div style="height:8px"></div>
+      <label class="mut">Ваше фото (один раз — и мы вас запомним):</label>
+      <input type="file" id="gPhoto" accept="image/*" style="margin-top:6px">
+      <div id="greet" style="margin-top:10px"></div>
+      <div style="height:10px"></div>
+      <button class="btn" onclick="guestStart()">Перейти к меню →</button>
+    </div>
+
+    <div id="gMain" class="hidden">
+      <div class="card" id="gGreet2"></div>
+      <div class="card">
+        <h2>📋 Меню</h2>
+        <div id="menu"></div>
+      </div>
+      <div class="card" id="gCartCard">
+        <h2>🧾 Ваш заказ <span id="cartCount" class="tag"></span></h2>
+        <div id="cart"></div>
+        <div style="height:8px"></div>
+        <button class="btn grn" onclick="sendOrder()">Отправить заказ на кухню</button>
+      </div>
+      <div class="card" id="gTrack">
+        <h2>⏱️ Статус заказа</h2>
+        <div id="gOrders"></div>
+      </div>
+      <div class="card">
+        <h2>🪑 Бронирование стола</h2>
+        <p class="mut">Первые 15 минут — бесплатно, дальше 100 ₽ / 10 мин.</p>
+        <div class="row" style="margin-top:8px">
+          <select id="bkTime"><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option></select>
+          <button class="btn sec" onclick="book()">Забронировать</button>
+        </div>
+        <div id="bkState" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ОФИЦИАНТ ===== -->
+  <div id="w" class="hidden">
+    <h2>🧑‍💼 Официант</h2>
+    <div id="wList"></div>
+  </div>
+
+  <!-- ===== КУХНЯ ===== -->
+  <div id="k" class="hidden">
+    <h2>👨‍🍳 Кухня</h2>
+    <div id="kList"></div>
+  </div>
+
+  <!-- ===== ДИРЕКТОР ===== -->
+  <div id="d" class="hidden">
+    <h2>📊 Директор</h2>
+    <div class="grid" style="grid-template-columns:1fr 1fr">
+      <div class="stat"><div class="v" id="dRev">0</div><div class="mut">выручка, ₽</div></div>
+      <div class="stat"><div class="v" id="dCnt">0</div><div class="mut">заказов сегодня</div></div>
+      <div class="stat"><div class="v" id="dAvg">—</div><div class="mut">среднее время, мин</div></div>
+      <div class="stat"><div class="v" id="dBk">0</div><div class="mut">броней активно</div></div>
+    </div>
+    <div class="hr"></div>
+    <div id="dList"></div>
+    <div class="card">
+      <h2>💛 История гостей</h2>
+      <div id="dGuests"></div>
+    </div>
+  </div>
+</div>
+
+<nav class="tabs">
+  <button id="tG" class="on" onclick="tab('g')">🧍<br>Гость</button>
+  <button id="tW" onclick="tab('w')">🧑‍💼<br>Официант</button>
+  <button id="tK" onclick="tab('k')">👨‍🍳<br>Кухня</button>
+  <button id="tD" onclick="tab('d')">📊<br>Директор</button>
+</nav>
+
+<script>
+const LS='resto4demo_v1';
+const MENU=[
+ {c:'Завтраки',items:[['🥞','Панкейки',320],['🍳','Омлет с сыром',280],['🥐','Круассан',190]]},
+ {c:'Горячее',items:[['🥩','Стейк',890],['🍝','Паста карбонара',450],['🍔','Бургер',390],['🍕','Пицца маргарита',520]]},
+ {c:'Салаты',items:[['🥗','Цезарь',380],['🥑','Салат с авокадо',420]]},
+ {c:'Десерты',items:[['🍰','Тирамису',300],['🍮','Флан',260]]},
+ {c:'Напитки',items:[['☕','Капучино',220],['🍵','Матча',240],['🥤','Лимонад',180]]}
+];
+const TRACKS=[['🎵','Лёгкий джаз',92],['🎵','Уютный вечер',74],['🎵','Тёплый лоу-фай',80],['🎵','Акустика дождя',66]];
+const COMPL=['Вы ещё заметнее стали!','От вас сегодня светится позитив!','С вами наш зал становится уютнее!','Ваш вкус, как всегда, безупречен!','Мы скучали — вы наша любимая компания!'];
+let S=JSON.parse(localStorage.getItem(LS)||'null')||{orders:[],bookings:[],guests:{},seq:1};
+let mood=0, cart=[], gName='', gTable='Стол 1', gStarted=false;
+let audioCtx=null, playing=-1;
+
+function save(){localStorage.setItem(LS,JSON.stringify(S))}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* ---------- audio ---------- */
+function playTone(i){
+  if(playing===i){playing=-1;renderPlaylist();return}
+  playing=i;
+  if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  audioCtx.resume();
+  if(window._mel)clearInterval(window._mel);
+  const scale=[0,3,5,7,10,12];
+  let step=0;
+  const note=()=>{
+    if(playing!==i)return;
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type='sine';o.frequency.value=220*Math.pow(2,scale[Math.floor(Math.random()*scale.length)]/12);
+    g.gain.setValueAtTime(0.12,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.9);
+    o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+1);
+    step++;
+  };
+  note();window._mel=setInterval(note,600);
+  renderPlaylist();
+}
+
+/* ---------- guest ---------- */
+function setMood(m){
+  mood=m;
+  document.querySelectorAll('.mood').forEach((el,i)=>el.classList.toggle('sel',i===m-1));
+  document.getElementById('moodMusic').classList.toggle('hidden',m>2);
+  if(m>0&&audioCtx&&m>2){playing=-1;clearInterval(window._mel)}
+}
+function renderPlaylist(){
+  document.getElementById('playlist').innerHTML=TRACKS.map((t,i)=>
+    `<div class="play" onclick="playTone(${i})"><span class="eq">${playing===i?'🎶':'▶️'}</span><div style="flex:1"><b>${t[1]}</b><div class="mut">${t[2]} bpm · под ваше настроение</div></div></div>`).join('');
+}
+function renderMenu(){
+  document.getElementById('menu').innerHTML=MENU.map(g=>
+    `<h2 style="margin-top:10px">${g.c}</h2><div class="grid">`+g.items.map(it=>
+    `<div class="item"><span class="em">${it[0]}</span><b>${it[1]}</b><span class="p">${it[2]} ₽ <button class="btn sm grn" style="float:right" onclick="add('${it[1]}',${it[2]})">+</button></span></div>`).join('')+'</div>').join('');
+}
+function add(n,p){const f=cart.find(c=>c.n===n);if(f)f.q++;else cart.push({n,p,q:1});renderCart()}
+function ch(n,d){const f=cart.find(c=>c.n===n);if(!f)return;f.q+=d;if(f.q<=0)cart=cart.filter(c=>c.n!==n);renderCart()}
+function renderCart(){
+  document.getElementById('cartCount').textContent=cart.reduce((s,c)=>s+c.q,0)+' поз.';
+  document.getElementById('cart').innerHTML=cart.length?cart.map(c=>
+    `<div class="row" style="align-items:center;margin-bottom:6px"><span style="flex:1">${c.n} ×${c.q}</span><b>${c.p*c.q} ₽</b><button class="btn sm sec" onclick="ch('${c.n}',-1)">−</button><button class="btn sm sec" onclick="ch('${c.n}',1)">+</button></div>`).join('')+'<div class="hr"></div><b>Итого: '+cart.reduce((s,c)=>s+c.p*c.q,0)+' ₽</b>':'<p class="mut">Корзина пуста — выберите блюда выше</p>';
+}
+function guestStart(){
+  gName=document.getElementById('gName').value.trim()||'Гость';
+  gTable=document.getElementById('gTable').value;
+  const prev=S.guests[gName];
+  let greet=`<h2>Здравствуйте, ${esc(gName)}!</h2>`;
+  if(prev&&prev.visits>0){
+    greet+=`<p style="margin-top:6px">💛 <b>Вы уже были у нас ${prev.visits===1?'1 раз':prev.visits+' раз(а)'}!</b></p>
+    <p style="margin-top:4px">${COMPL[Math.floor(Math.random()*COMPL.length)]}</p>
+    ${prev.photo?`<img class="ph" style="margin-top:8px" src="${prev.photo}">`:''}`;
+  } else {
+    greet+=`<p style="margin-top:6px" class="mut">Приятно познакомиться! Мы запомним вас и в следующий раз удивим.</p>`;
+  }
+  const f=document.getElementById('gPhoto').files[0];
+  const finish=()=>{
+    S.guests[gName]=S.guests[gName]||{visits:0};
+    S.guests[gName].visits++;
+    if(S.guests[gName].photoData)S.guests[gName].photo=S.guests[gName].photoData;
+    save();
+    document.getElementById('gGreet2').innerHTML=greet+(mood<=2&&mood>0?'<p style="margin-top:4px">🎵 Музыка для вашего настроения уже в плейлисте наверху.</p>':'');
+    document.getElementById('gStep0').classList.add('hidden');
+    document.getElementById('gMain').classList.remove('hidden');
+    gStarted=true;renderAll();
+  };
+  if(f){const r=new FileReader();r.onload=()=>{S.guests[gName]=S.guests[gName]||{visits:0};S.guests[gName].photoData=r.result;greet+=`<img class="ph" style="margin-top:8px" src="${r.result}">`;finish()};r.readAsDataURL(f);}
+  else finish();
+}
+function sendOrder(){
+  if(!cart.length)return alert('Добавьте блюда в корзину');
+  const o={id:S.seq++,table:gTable,name:gName,items:cart.map(c=>({...c})),total:cart.reduce((s,c)=>s+c.p*c.q,0),status:'new',mins:0,placedAt:Date.now(),readyAt:0};
+  S.orders.push(o);cart=[];save();renderCart();renderAll();
+  alert('✅ Заказ отправлен на кухню! Следите за таймером ниже.');
+}
+function book(){
+  S.bookings.push({id:S.seq++,table:gTable,name:gName,time:document.getElementById('bkTime').value,ts:Date.now(),done:false});
+  save();renderAll();
+}
+
+/* ---------- renders ---------- */
+function stTxt(s){return {new:['Новый','st-new'],cooking:['Готовится','st-cooking'],ready:['Готов!','st-ready'],served:['Подано','st-served']}[s]}
+function orderHTML(o,role){
+  const[t,cl]=stTxt(o.status);
+  let timer='';
+  if(o.status==='cooking'||o.status==='ready'){
+    const left=Math.max(0,Math.ceil((o.readyAt-Date.now())/1000));
+    timer=`<div class="timer" style="margin-top:6px">${o.status==='ready'?'✅ Готово!':'⏱ '+Math.floor(left/60)+':'+String(left%60).padStart(2,'0')}</div>`;
+  }
+  const acts={
+    k:o.status==='new'?`<div class="row" style="margin-top:8px"><button class="btn sm" onclick="kStart(${o.id},10)">10 мин</button><button class="btn sm" onclick="kStart(${o.id},15)">15 мин</button><button class="btn sm" onclick="kStart(${o.id},20)">20 мин</button></div>`
+      :o.status==='cooking'?`<button class="btn sm grn" style="margin-top:8px" onclick="kDone(${o.id})">✅ Готово</button>`:'',
+    w:o.status==='ready'?`<button class="btn sm grn" style="margin-top:8px" onclick="wServe(${o.id})">Подано гостю</button>`:'',
+    g:'',d:''}[role];
+  return `<div class="card order"><span class="tag">${o.table}</span><span class="tag ${cl}">${t}</span>
+    <div class="mut" style="margin-top:4px">${o.items.map(i=>i.n+' ×'+i.q).join(', ')}</div>
+    <b>${o.total} ₽</b>${timer}${acts}</div>`;
+}
+function kStart(id,m){const o=S.orders.find(x=>x.id===id);if(!o)return;o.status='cooking';o.mins=m;o.readyAt=Date.now()+m*60000;save();renderAll()}
+function kDone(id){const o=S.orders.find(x=>x.id===id);if(o){o.status='ready';o.readyAt=Date.now();save();renderAll()}}
+function wServe(id){const o=S.orders.find(x=>x.id===id);if(o){o.status='served';save();renderAll()}}
+
+function renderAll(){
+  const day=Date.now()-86400000;
+  const ord=S.orders;
+  // guest
+  if(gStarted){
+    const mine=ord.filter(o=>o.name===gName&&o.placedAt>day);
+    document.getElementById('gOrders').innerHTML=mine.length?mine.slice().reverse().map(o=>orderHTML(o,'g')).join(''):'<p class="mut">Заказов пока нет</p>';
+    const bk=S.bookings.filter(b=>b.name===gName&&!b.done);
+    document.getElementById('bkState').innerHTML=bk.length?bk.map(b=>{
+      const freeEnd=b.ts+15*60000, left=Math.max(0,Math.ceil((freeEnd-Date.now())/1000));
+      const pay=Date.now()>freeEnd?Math.ceil((Date.now()-freeEnd)/600000)*100:0;
+      return `<div class="card" style="background:var(--card2)"><b>🪑 ${b.table} на ${b.time}</b>
+        <div class="timer" style="margin-top:6px">${left>0?'Бесплатно ещё '+Math.floor(left/60)+':'+String(left%60).padStart(2,'0'):'⚠️ Платное удержание: +'+pay+' ₽'}</div>
+        <button class="btn sm red" style="margin-top:8px" onclick="unbook(${b.id})">Отменить бронь</button></div>`;
+    }).join(''):'<p class="mut">Активных броней нет</p>';
+  }
+  // waiter & kitchen & director lists
+  document.getElementById('wList').innerHTML=ord.filter(o=>o.status!=='served').length?ord.filter(o=>o.status!=='served').slice().reverse().map(o=>orderHTML(o,'w')).join(''):'<div class="card"><p class="mut">Нет активных заказов</p></div>';
+  document.getElementById('kList').innerHTML=ord.filter(o=>o.status==='new'||o.status==='cooking').length?ord.filter(o=>o.status==='new'||o.status==='cooking').slice().reverse().map(o=>orderHTML(o,'k')).join(''):'<div class="card"><p class="mut">Новых заказов нет</p></div>';
+  const done=ord.filter(o=>o.placedAt>day);
+  document.getElementById('dRev').textContent=done.reduce((s,o)=>s+o.total,0);
+  document.getElementById('dCnt').textContent=done.length;
+  const cm=done.filter(o=>o.mins>0);
+  document.getElementById('dAvg').textContent=cm.length?(cm.reduce((s,o)=>s+o.mins,0)/cm.length).toFixed(1):'—';
+  document.getElementById('dBk').textContent=S.bookings.filter(b=>!b.done).length;
+  document.getElementById('dList').innerHTML=done.length?done.slice().reverse().map(o=>orderHTML(o,'d')).join(''):'<div class="card"><p class="mut">Заказов сегодня нет</p></div>';
+  const gs=Object.entries(S.guests);
+  document.getElementById('dGuests').innerHTML=gs.length?gs.map(([n,g])=>
+    `<div class="row" style="align-items:center;margin-bottom:8px">${g.photo?`<img class="ph" src="${g.photo}">`:'👤'}<div style="flex:1"><b>${esc(n)}</b><div class="mut">визитов: ${g.visits}</div></div><span class="tag">💛 ${COMPL[(n.length+g.visits)%COMPL.length]}</span></div>`).join(''):'<p class="mut">Гостей пока нет</p>';
+}
+function unbook(id){S.bookings=S.bookings.filter(b=>b.id!==id);save();renderAll()}
+
+/* ---------- tabs ---------- */
+function tab(r){
+  ['g','w','k','d'].forEach(x=>{document.getElementById(x).classList.toggle('hidden',x!==r);document.getElementById('t'+x.toUpperCase()).classList.toggle('on',x===r)});
+  window.scrollTo(0,0);
+}
+window.addEventListener('storage',()=>{S=JSON.parse(localStorage.getItem(LS)||'null')||S;renderAll()});
+setInterval(renderAll,1000);
+renderPlaylist();renderMenu();renderCart();renderAll();
+</script>
+</body>
+</html>
